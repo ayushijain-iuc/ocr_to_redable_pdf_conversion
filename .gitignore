@@ -1,4 +1,4 @@
 *.pyc
-myenv\
+myenv/
 */migrations/*
 !*/migrations/__init__.py

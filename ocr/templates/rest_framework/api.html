@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR JSON Response</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>OCR JSON Response</h1>
+
+    <div id="response"></div>
+
+    <script>
+        $(document).ready(function() {
+            // Fetch the JSON response from the OCRView
+            $.ajax({
+                url: '/api/ocr/',  // Replace with your actual OCR view URL
+                type: 'GET',  // Use GET if you just want to display the response without posting any data
+                dataType: 'json',
+                success: function(response) {
+                    $('#response').html(
+                        '<p><strong>Success:</strong> ' + response.message + '</p>' +
+                        '<p><strong>Document Length:</strong> ' + response.extracted_document_length + ' bytes</p>'
+                    );
+                },
+                error: function(xhr) {
+                    var errorResponse = JSON.parse(xhr.responseText);
+                    $('#response').html(
+                        '<p><strong>Error:</strong> ' + errorResponse.error + '</p>'
+                    );
+                }
+            });
+        });
+    </script>
+</body>
+</html>

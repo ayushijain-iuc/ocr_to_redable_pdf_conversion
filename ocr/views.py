@@ -83,11 +83,15 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
 import ocrmypdf
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from PIL import Image
+
 
 class OCRView(APIView):
     parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({"message": "Request successful"}, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         file = request.data.get('file')
@@ -95,7 +99,7 @@ class OCRView(APIView):
         end_match = request.data.get('end_match')
 
         if not file:
-            return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create in-memory file for OCR processing
         input_bytes = io.BytesIO()
@@ -123,9 +127,9 @@ class OCRView(APIView):
             ocrmypdf.ocr(input_bytes, output_bytes, deskew=True, force_ocr=True)
             output_bytes.seek(0)
 
-            # If start_match and end_match are not provided, return the entire OCR'd PDF
+            # If start_match and end_match are not provided, return a success message
             if not start_match or not end_match:
-                return HttpResponse(output_bytes.getvalue(), content_type='application/octet-stream')
+                return Response({"success": True, "message": "OCR process completed successfully"}, status=status.HTTP_200_OK)
 
             # Open the OCRed PDF from in-memory bytes
             doc = fitz.open(stream=output_bytes, filetype="pdf")
